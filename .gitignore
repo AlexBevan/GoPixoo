@@ -4,4 +4,7 @@
 # Build artifacts
 gopixoo
 dist/
+
+# WSL/NTFS zone identifier files
+*:Zone.Identifier
 *.gif
