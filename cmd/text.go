@@ -36,7 +36,7 @@ func init() {
 	textSendCmd.Flags().String("color", "#FFFFFF", "text color as hex (e.g. #FF0000)")
 	textSendCmd.Flags().Int("speed", 100, "scroll speed in ms")
 	textSendCmd.Flags().Int("dir", 0, "scroll direction (0=left, 1=right)")
-	textSendCmd.Flags().Int("align", 1, "alignment (1=left, 2=center, 3=right)")
+	textSendCmd.Flags().Int("align", 0, "static alignment (1=left, 2=center, 3=right); 0 omits the field to allow scrolling")
 	textSendCmd.Flags().Int("id", 1, "text ID for managing multiple texts")
 	textSendCmd.Flags().Int("width", 64, "text width in pixels")
 

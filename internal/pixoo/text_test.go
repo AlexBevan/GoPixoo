@@ -93,11 +93,20 @@ func TestSendText_Structure(t *testing.T) {
 			if speed, ok := payload["speed"].(int); !ok || speed != tt.speed {
 				t.Errorf("speed = %v, want %d", payload["speed"], tt.speed)
 			}
-			if align, ok := payload["align"].(int); !ok || align != tt.align {
-				t.Errorf("align = %v, want %d", payload["align"], tt.align)
-			}
-			if len(payload) != 11 {
-				t.Errorf("payload field count = %d, want 11", len(payload))
+			if tt.align != 0 {
+				if align, ok := payload["align"].(int); !ok || align != tt.align {
+					t.Errorf("align = %v, want %d", payload["align"], tt.align)
+				}
+				if len(payload) != 11 {
+					t.Errorf("payload field count = %d, want 11 (with align)", len(payload))
+				}
+			} else {
+				if _, exists := payload["align"]; exists {
+					t.Errorf("align should not be present when value is 0")
+				}
+				if len(payload) != 10 {
+					t.Errorf("payload field count = %d, want 10 (without align)", len(payload))
+				}
 			}
 		})
 	}
