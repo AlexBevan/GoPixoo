@@ -4,8 +4,7 @@ A Go CLI tool for controlling Divoom Pixoo64 LED displays over your local networ
 
 ## Features
 
-- 📸 **Send animated GIFs** — Push multi-frame GIFs to the display with custom frame timing
-- 🖼️ **Display static images** — PNG, JPEG, BMP, GIF (first frame)
+- 📸 **Send images & animated GIFs** — Push static images (PNG, JPEG, BMP) or multi-frame GIFs to the display
 - 📝 **Scrolling text** — Display customizable text with fonts, colors, speed, and alignment
 - ⏱️ **Built-in tools** — Timer, stopwatch, scoreboard, noise meter
 - 🎨 **Drawing primitives** — Pixel-level control, fill, clear
@@ -144,9 +143,11 @@ gopixoo device info
 
 ## Commands Reference
 
-### `send` — Push GIF or Image
+### `send` — Push Image or GIF
 
-Send animated GIFs or static images to the display.
+Send static images (PNG, JPEG, BMP) or animated GIFs to the display. For animated GIFs,
+all frames are extracted and sent sequentially. For static images, a single frame is sent.
+The `--speed` flag only applies to animated GIFs.
 
 ```bash
 gopixoo send <file> [flags]
@@ -157,9 +158,15 @@ gopixoo send <file> [flags]
 - `-s, --speed <ms>` — Frame delay in milliseconds (default: 100)
 - `-r, --resize <mode>` — Resize mode: `fit` (default), `fill`, `stretch`, `none`
   - `fit` — Scale with aspect ratio, pad with black
-  - `fill` — Scale with aspect ratio, crop center
+  - `fill` — Scale with aspect ratio, crop to anchor point
   - `stretch` — Ignore aspect ratio, fill 64x64
   - `none` — No resize, crop to 64x64
+- `--anchor <position>` — Crop anchor for `fill` mode (default: center)
+  - `center` — Crop from center
+  - `top` — Crop from top
+  - `bottom` — Crop from bottom
+  - `left` — Crop from left
+  - `right` — Crop from right
 - `--size <px>` — Target size (default: 64 for Pixoo64)
 
 **Examples:**
@@ -176,22 +183,14 @@ gopixoo send poster.png --resize fit
 # Stretch to fill (no aspect ratio)
 gopixoo send pattern.jpg --resize stretch
 
+# Fill mode, crop from top
+gopixoo send portrait.jpg --resize fill --anchor top
+
+# Fill mode, crop from left
+gopixoo send landscape.jpg --resize fill --anchor left
+
 # Send to custom size (e.g., Pixoo16)
 gopixoo send small.gif --size 16
-```
-
-### `image` — Push Static Image
-
-Display a single static image. Same flags as `send`, but processes only the first frame.
-
-```bash
-gopixoo image <file> [flags]
-```
-
-**Examples:**
-```bash
-gopixoo image logo.png --resize fit
-gopixoo image badge.jpg --resize fill
 ```
 
 ### `text` — Send or Clear Text

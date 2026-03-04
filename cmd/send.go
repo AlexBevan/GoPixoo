@@ -12,13 +12,14 @@ import (
 
 var sendCmd = &cobra.Command{
 	Use:   "send <file>",
-	Short: "Send a GIF or image to the Pixoo64 display",
+	Short: "Send an image or animated GIF to the Pixoo64 display",
 	Long: `Send pushes an image or animated GIF to the Pixoo64 device.
 
 For animated GIFs, all frames are extracted and sent sequentially.
-For static images (PNG, JPEG), a single frame is sent.
+For static images (PNG, JPEG, BMP), a single frame is sent.
 
-The image is resized to fit the display using the chosen resize mode.`,
+The image is resized to fit the display using the chosen resize mode.
+The --speed flag only applies to animated GIFs.`,
 	Args: cobra.ExactArgs(1),
 	RunE: runSend,
 }
