@@ -1,0 +1,7 @@
+# Squad team state (local only)
+.squad/
+
+# Build artifacts
+gopixoo
+dist/
+*.gif
