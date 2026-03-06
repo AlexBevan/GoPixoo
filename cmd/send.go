@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"image"
 	"os"
+	"sync"
 
 	"github.com/alexbevan/gopixoo/internal/imaging"
 	"github.com/alexbevan/gopixoo/internal/pixoo"
@@ -81,15 +83,20 @@ func runSend(cmd *cobra.Command, args []string) error {
 		fmt.Fprintf(os.Stderr, "Extracted %d frame(s)\n", totalFrames)
 	}
 
-	// Resize and encode each frame.
-	encodedFrames := make([]string, 0, totalFrames)
+	// Resize and encode each frame in parallel.
+	encodedFrames := make([]string, totalFrames)
+	var wg sync.WaitGroup
 	for i, frame := range frames {
-		resized := imaging.ResizeWithAnchor(frame, sendSize, mode, anchor)
-		encoded := imaging.EncodePixelsSized(resized, sendSize)
-		encodedFrames = append(encodedFrames, encoded)
-		if isVerbose {
-			fmt.Fprintf(os.Stderr, "Encoded frame %d of %d\n", i+1, totalFrames)
-		}
+		wg.Add(1)
+		go func(i int, frame image.Image) {
+			defer wg.Done()
+			resized := imaging.ResizeWithAnchor(frame, sendSize, mode, anchor)
+			encodedFrames[i] = imaging.EncodePixelsSized(resized, sendSize)
+		}(i, frame)
+	}
+	wg.Wait()
+	if isVerbose {
+		fmt.Fprintf(os.Stderr, "Encoded %d frame(s) in parallel\n", totalFrames)
 	}
 
 	// Connect to device.
